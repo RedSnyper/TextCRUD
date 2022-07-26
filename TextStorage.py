@@ -56,6 +56,66 @@ class TextStorage():
             input = ','.join(r for r in res)
             f.write(f'{input}\n')
         print(f'{obj} created')
+    
+    
+    def retrieve(self, obj, **kwargs):
+        with open(self.file) as f:
+            self._check_existing_fields(kwargs,create=False)
+            result_set = []
+            for line in f.readlines():
+                match = False
+                line = line.strip() #removes the /n
+                cols = line.split(',')
+                if not cols[0].isnumeric():
+                    continue
+                cols = [int(value) if value.isnumeric() else value for value in cols]
+                record = obj(*cols)
+                for key, value in kwargs.items():
+                    if value == getattr(record, key):
+                        match = True
+                    else:
+                        match = False
+                if match:
+                    result_set.append(record)
+                    del record
+            return result_set
+
+    
+        
+    ##############################################################################################
+    ## first checks and creates object
+    # def retrieve(self, obj,**kwargs):
+    #
+    #     with open(self.file) as f:
+    #         self._check_existing_fields(kwargs,create=False)
+    #         search_col = [self.__fields__.index(field) for field in kwargs.keys()]
+    #         result_set = []
+    #         for line in f.readlines():
+    #             line = line.strip() #removes the /n
+    #             cols = line.split(',')
+    #             if not cols[0].isnumeric():
+    #                 continue
+    #             match = False
+    #             for col in search_col:
+    #                 for value in kwargs.values():   #allows multiple column check
+    #                     if str(value) == cols[col]:
+    #                         match = True
+    #                     else:
+    #                         match = False
+    #             if match:
+    #                 cols = [int(value) if value.isnumeric() else value for value in cols]
+    #                 result_set.append(obj(*cols))
+    #         return result_set
+    ##############################################################################################
+
+
+
+    def update(self, obj,**kwargs):
+        pass
+    
+    def delete(self, obj, **kwargs):
+        pass
+
 
 
     def __str__(self):
@@ -70,5 +130,13 @@ if __name__ == "__main__":
     u3 = User(1002, "Ze", 22)
     u4 = User(1003, "Shyam", 20)
     users = [u1,u2,u3,u4]
-    for u in users:
-        t.create(u)
+    try:                #is removed in final script
+        for u in users:
+            t.create(u)
+    except KeyError:
+        print(f"User {u} already exists")
+
+    rs = t.retrieve(User, name="Ze")
+    print(rs)
+    rs = t.retrieve(User, name="Ze", age=21)
+    print(rs)
