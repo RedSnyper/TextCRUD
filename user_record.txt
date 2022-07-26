@@ -1,0 +1,8 @@
+table=User
+fields=id,name,age
+type=int,str,int
+------------------------------------
+1000,Ram,20
+1001,Ze,21
+1002,Ze,22
+1003,Shyam,20
